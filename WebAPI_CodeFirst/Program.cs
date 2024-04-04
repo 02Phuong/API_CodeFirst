@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using System;
 using WebAPI_CodeFirst.Data;
+using WebAPI_CodeFirst.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Register Library Service to use it with Dependency Injection in Controllers
-//builder.Services.AddTransient<ILibraryService, LibraryService>();
+builder.Services.AddTransient<IStudentService, StudentService>();
 // Register database
 builder.Services.AddDbContext<StudentDbContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("StringConnection")));

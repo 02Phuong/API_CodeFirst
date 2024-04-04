@@ -8,27 +8,50 @@ namespace WebAPI_CodeFirst.Data
 		public StudentDbContext(DbContextOptions<StudentDbContext> options) : base(options)
 		{
 		}
-		public DbSet<Students> Student {  get; set; }
+		public DbSet<Students> Student { get; set; }
 		public DbSet<Courses> Course { get; set; }
 		public DbSet<StudentCourses> StudentCourse { get; set; }
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
+			builder.Entity<Models.StudentCourses>().HasKey(h => new { h.StudentId, h.CourseId });
 
-				builder.Entity<StudentCourses>()
-					.HasKey(sc => new { sc.StudentId, sc.CourseId });
-
-			builder.Entity<StudentCourses>()
-				.HasOne(sc => sc.Students)
-				.WithMany(s => s.StudentCourse)
-				.HasForeignKey(sc => sc.StudentId);
-
-
-			builder.Entity<StudentCourses>()
-					.HasOne(sc => sc.Courses)
-					.WithMany(c => c.StudentCourse)
-					.HasForeignKey(sc => sc.CourseId);
 		}
+	}
+
+	public class DbInitializer
+	{
+		public static void Initialize(StudentDbContext context)
+		{
+			context.Database.EnsureCreated();
+
+			// Add initial data here
+			if (!context.Student.Any())
+			{
+				var students = new List<Students>
+				{
+					new Students { Name = "John Doe" },
+					new Students { Name = "Jane Smith" }
+                    // Add more students as needed
+                };
+				context.Student.AddRange(students);
+				context.SaveChanges();
+			}
+
+			if (!context.Course.Any())
+			{
+				var courses = new List<Courses>
+				{
+					new Courses { CourseName = "Math", Description = "Mathematics course" },
+					new Courses { CourseName = "Science", Description = "Science course" }
+                    // Add more courses as needed
+                };
+				context.Course.AddRange(courses);
+				context.SaveChanges();
+			}
+
+			// Add more initial data for other entities if needed
 		}
+	}
 
 }
 
